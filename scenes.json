@@ -1,11 +1,54 @@
 {
-"1": { "label": "Árvore de Natal", "file": "assets/natal.mp4" },
-"2": { "label": "Faro Oeste", "file": "assets/faroeste.mp4" },
-"3": { "label": "Sala", "file": "assets/sala.mp4" },
-"4": { "label": "Pai", "file": "assets/pai1.mp4" },
-"5": { "label": "Parque", "file": "assets/parque.jpeg" },
-"6": { "label": "Cozinha", "file": "assets/cozinha.mp4" },
-"7": { "label": "Mágica", "file": "assets/magica.mp4" },
-"8": { "label": "Desgosto", "file": "assets/desgosto.mp4" },
-"9": { "label": "Quarto", "file": "assets/quarto.mp4" }
+  "1": {
+    "label": "Árvore de Natal",
+    "file": "assets/natal.mp4",
+    "loop": true,
+    "sound": false
+  },
+  "2": {
+    "label": "Faro Oeste",
+    "file": "assets/faroeste.mp4",
+    "loop": true,
+    "sound": true
+  },
+  "3": {
+    "label": "Sala",
+    "file": "assets/sala.mp4",
+    "loop": true,
+    "sound": true
+  },
+  "4": {
+    "label": "Pai",
+    "file": "assets/pai1.mp4",
+    "loop": false,
+    "sound": true
+  },
+  "5": {
+    "label": "Parque",
+    "file": "assets/parque.jpeg"
+  },
+  "6": {
+    "label": "Cozinha",
+    "file": "assets/cozinha.mp4",
+    "loop": true,
+    "sound": true
+  },
+  "7": {
+    "label": "Mágica",
+    "file": "assets/magica.mp4",
+    "loop": false,
+    "sound": true
+  },
+  "8": {
+    "label": "Desgosto",
+    "file": "assets/desgosto.mp4",
+    "loop": false,
+    "sound": true
+  },
+  "9": {
+    "label": "Quarto",
+    "file": "assets/quarto.mp4",
+    "loop": true,
+    "sound": true
+  }
 }

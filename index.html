@@ -45,17 +45,29 @@
     let scenes = {};
     let currentElement = null;
 
+    // === ÁUDIO AVANÇADO ===
+    let audioContext = null;
+    let gainNode = null;
+    let currentVolume = 1.0; // volume inicial (100%)
+
     fetch('scenes.json')
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => scenes = data);
 
     function clearScene() {
       if (currentElement) {
         if (currentElement.tagName === 'VIDEO') {
           currentElement.pause();
+          currentElement.src = '';
         }
         currentElement.remove();
         currentElement = null;
+      }
+
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+        gainNode = null;
       }
     }
 
@@ -65,20 +77,53 @@
 
       clearScene();
 
-      const extension = scene.file.split('.').pop().toLowerCase();
       const container = document.getElementById('container');
+      const extension = scene.file.split('.').pop().toLowerCase();
 
       if (['mp4', 'webm', 'ogg'].includes(extension)) {
         const video = document.createElement('video');
+
         video.src = scene.file;
         video.autoplay = true;
-        video.loop = true;
-        video.muted = false;
-        video.playsInline = true;
+        video.loop = scene.loop === true;
+        video.muted = scene.sound === false;
         video.controls = false;
+        video.playsInline = true;
+
+        // === WEB AUDIO API (GANHO ACIMA DE 100%) ===
+        if (scene.sound !== false) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const source = audioContext.createMediaElementSource(video);
+
+          gainNode = audioContext.createGain();
+          gainNode.gain.value = currentVolume;
+
+          source.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+        }
+
+        // === FADE-OUT DE ÁUDIO (somente para vídeos únicos) ===
+        if (scene.loop === false && scene.sound !== false) {
+          const fadeDuration = 2; // segundos
+
+          video.addEventListener('timeupdate', () => {
+            if (!video.duration || !gainNode) return;
+
+            const remaining = video.duration - video.currentTime;
+
+            if (remaining <= fadeDuration) {
+              gainNode.gain.value = Math.max(0, (remaining / fadeDuration) * currentVolume);
+            }
+          });
+
+          video.addEventListener('ended', () => {
+            clearScene();
+          });
+        }
 
         container.appendChild(video);
         currentElement = video;
+
       } else {
         const img = document.createElement('img');
         img.src = scene.file;
@@ -88,11 +133,32 @@
       }
     }
 
-    document.addEventListener('keydown', function (event) {
-      const key = event.key.toLowerCase();
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
 
+      // ESC = parar tudo
       if (key === 'escape') {
         clearScene();
+        return;
+      }
+
+      // Aumentar volume
+      if (key === '+' || key === '=') {
+        if (gainNode) {
+          currentVolume = Math.min(currentVolume + 0.2, 3.0);
+          gainNode.gain.value = currentVolume;
+          console.log('Volume:', currentVolume);
+        }
+        return;
+      }
+
+      // Diminuir volume
+      if (key === '-') {
+        if (gainNode) {
+          currentVolume = Math.max(currentVolume - 0.2, 0);
+          gainNode.gain.value = currentVolume;
+          console.log('Volume:', currentVolume);
+        }
         return;
       }
 
